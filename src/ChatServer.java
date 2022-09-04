@@ -31,6 +31,8 @@ public class ChatServer {
 
             ClientSocket clientSocket = new ClientSocket(serverSocket.accept());
             //System.out.println("Cliente Conectou-se na Porta " + clientSocket.getRemoteSocketAddress());
+            String msg = "Voce esta Conectado ao Servidor Java " + clientSocket.getRemoteSocketAddress();
+            clientSocket.sendMsg(msg);
 
             new Thread(() -> clientMessageLoop(clientSocket)).start();
 
@@ -47,7 +49,7 @@ public class ChatServer {
                 return;
             }
             System.out.printf("Mensagem recebida do cliente %s: %s\n", clientSocket.getRemoteSocketAddress(), msg);
-            clientSocket.sendMsg(msg);
+            clientSocket.sendMsg("Retorno servidor : " + msg + "\n");
         }
 
     }

@@ -30,15 +30,15 @@ public class ChatClient {
     }
 
     public void start() throws IOException {
-        
+
         try {
             clientSocket = new ClientSocket(
-                    new Socket(SERVER_ADDRESS,8081));
+                    new Socket(SERVER_ADDRESS,8089));
+            //System.out.println("Cliente conectado ao Servidor!");
         } catch (IOException ex) {
             Logger.getLogger(ChatClient.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-       // System.out.println("Cliente conectado ao Servidor!");
         messageLoop();
     }
 
@@ -47,14 +47,13 @@ public class ChatClient {
         String msg;
 
         do {
-            System.out.print("Digite sua mensagem ou Sair para finalizar a aplicacao  ");
+            new Thread(() -> clientMessageReturnLoop(clientSocket)).start();
+            System.out.println("Digite sua mensagem ou Sair para finalizar a aplicacao");
             msg = this.scanner.nextLine();
             clientSocket.sendMsg(msg);
 
-            new Thread(() -> clientMessageReturnLoop(clientSocket)).start();
-
         } while (!msg.equalsIgnoreCase("sair"));
-
+          
     }
 
     public void clientMessageReturnLoop(ClientSocket clientSocket) {
@@ -65,8 +64,8 @@ public class ChatClient {
             if ("sair".equalsIgnoreCase(msg)) {
                 return;
             }
-            System.out.printf("Mensagem recebida do cliente %s: %s\n", clientSocket.getRemoteSocketAddress(), msg);
-            
+            System.out.println(msg);
+
         }
 
     }
