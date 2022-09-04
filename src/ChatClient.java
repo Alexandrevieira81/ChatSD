@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -17,7 +19,7 @@ public class ChatClient {
     /**
      * @param args the command line arguments
      */
-    private static final String SERVER_ADDRESS = "ws://ssh.chauchuty.cf";
+    private static final String SERVER_ADDRESS = "ssh.chauchuty.cf";
     private ClientSocket clientSocket;
     private final Scanner scanner;
     private PrintWriter out;
@@ -28,10 +30,15 @@ public class ChatClient {
     }
 
     public void start() throws IOException {
-        clientSocket = new ClientSocket(
-                new Socket(SERVER_ADDRESS, 8081));
+        
+        try {
+            clientSocket = new ClientSocket(
+                    new Socket(SERVER_ADDRESS,8081));
+        } catch (IOException ex) {
+            Logger.getLogger(ChatClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-        System.out.println("Cliente conectado ao Servidor!");
+       // System.out.println("Cliente conectado ao Servidor!");
         messageLoop();
     }
 

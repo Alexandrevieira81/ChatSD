@@ -15,7 +15,7 @@ public class ClientSocket {
     public ClientSocket(Socket socket) throws IOException {
 
         this.socket = socket;
-        System.out.println(" Cliente :"+socket.getRemoteSocketAddress()+ " : conectou");
+        //System.out.println(" Cliente :"+socket.getRemoteSocketAddress()+ " : conectou");
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(socket.getOutputStream(), true);
     }

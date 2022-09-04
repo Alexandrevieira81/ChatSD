@@ -15,7 +15,7 @@ import java.net.Socket;
  */
 public class ChatServer {
 
-    private final int PORT = 4000;
+    private final int PORT = 8089;
     private ServerSocket serverSocket;
 
     public void start() throws IOException {
