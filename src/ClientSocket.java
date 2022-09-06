@@ -34,6 +34,12 @@ public class ClientSocket {
         out.println(msg);
         return !out.checkError();
     }
+    public void closeInOut() throws IOException{
+        
+        in.close();
+        out.close();
+        socket.close();
+    }
     
     public SocketAddress getRemoteSocketAddress(){
     

@@ -79,7 +79,7 @@ public class ChatClient {
         } catch (IOException ex) {
             System.out.println("Erro ao conectar com o Servidor! " + ex.getMessage());
         }
-        System.out.println("Cliente Desconectou-se!");
+        
     }
 
 }

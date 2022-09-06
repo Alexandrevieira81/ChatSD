@@ -1,9 +1,9 @@
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -22,6 +22,7 @@ public class ChatServer {
 
         serverSocket = new ServerSocket(PORT);
         System.out.println("Servidor Inicializado na Porta! " + PORT);
+        System.out.println("Aguardando Conexao ......");
         ClientConectionLoop();
     }
 
@@ -30,8 +31,9 @@ public class ChatServer {
         while (true) {
 
             ClientSocket clientSocket = new ClientSocket(serverSocket.accept());
-            //System.out.println("Cliente Conectou-se na Porta " + clientSocket.getRemoteSocketAddress());
-            String msg = "Voce esta Conectado ao Servidor Java " + clientSocket.getRemoteSocketAddress();
+            System.out.println("Cliente Conectado " + clientSocket.getRemoteSocketAddress());
+            InetAddress host = serverSocket.getInetAddress();
+            String msg = "Voce esta Conectado no Servidor JavaSD";
             clientSocket.sendMsg(msg);
 
             new Thread(() -> clientMessageLoop(clientSocket)).start();
@@ -46,10 +48,17 @@ public class ChatServer {
 
         while ((msg = clientSocket.getMessage()) != null) {
             if ("sair".equalsIgnoreCase(msg)) {
+                clientSocket.sendMsg("Desconectado!");
+                try {
+                    clientSocket.closeInOut();
+                    System.out.println("Socket fechado para o cliente "+clientSocket.getRemoteSocketAddress());
+                } catch (IOException ex) {
+                    Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 return;
             }
             System.out.printf("Mensagem recebida do cliente %s: %s\n", clientSocket.getRemoteSocketAddress(), msg);
-            clientSocket.sendMsg("Retorno servidor : " + msg + "\n");
+            clientSocket.sendMsg("Retorno servidor : " + msg);
         }
 
     }
