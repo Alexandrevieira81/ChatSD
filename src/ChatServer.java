@@ -2,8 +2,11 @@
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -17,6 +20,7 @@ public class ChatServer {
 
     private final int PORT = 8089;
     private ServerSocket serverSocket;
+    private final List<ClientSocket> clients = new LinkedList();
 
     public void start() throws IOException {
 
@@ -32,6 +36,7 @@ public class ChatServer {
 
             ClientSocket clientSocket = new ClientSocket(serverSocket.accept());
             System.out.println("Cliente Conectado " + clientSocket.getRemoteSocketAddress());
+            clients.add(clientSocket);
             InetAddress host = serverSocket.getInetAddress();
             String msg = "Voce esta Conectado no Servidor JavaSD";
             clientSocket.sendMsg(msg);
@@ -52,16 +57,33 @@ public class ChatServer {
                 break;
             }
             System.out.printf("Mensagem recebida do cliente %s: %s\n", clientSocket.getRemoteSocketAddress(), msg);
-            clientSocket.sendMsg("Servidor: " + msg);
+            //clientSocket.sendMsg("[ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " ]" + " Servidor: " + msg);
+            Broadcasting(clientSocket, msg);
         }
         try {
             clientSocket.closeInOut();
             System.out.println("Socket fechado para o cliente " + clientSocket.getRemoteSocketAddress());
-            
+
         } catch (IOException ex) {
             System.out.println("Problemas ao fechar o socket");
         }
         //return;
+
+    }
+
+    private void Broadcasting(ClientSocket sender, String msg) {
+
+        Iterator<ClientSocket> iterator = clients.iterator();
+        while (iterator.hasNext()) { //percorres a list clients
+            ClientSocket clientSocket = iterator.next();
+            if (!sender.equals(clientSocket)) { //parâmetro sendo verifica o remetente da msg, assim evita enviar o mensagem pra vc mesmo
+                if (!clientSocket.sendMsg("[ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " ]" + " Usuário: " + msg)) {
+                    iterator.remove();
+                }
+
+            }
+
+        }
 
     }
 
