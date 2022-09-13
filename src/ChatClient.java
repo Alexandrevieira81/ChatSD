@@ -35,6 +35,7 @@ public class ChatClient {
             clientSocket = new ClientSocket(
                     new Socket(SERVER_ADDRESS,8089));
             //System.out.println("Cliente conectado ao Servidor!");
+            new Thread(() -> clientMessageReturnLoop(clientSocket)).start();
         } catch (IOException ex) {
             Logger.getLogger(ChatClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -47,7 +48,11 @@ public class ChatClient {
         String msg;
 
         do {
-            new Thread(() -> clientMessageReturnLoop(clientSocket)).start();
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ChatClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
             System.out.println("Digite sua mensagem ou Sair para finalizar a aplicacao");
             msg = this.scanner.nextLine();
             clientSocket.sendMsg(msg);

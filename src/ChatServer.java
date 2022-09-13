@@ -47,19 +47,21 @@ public class ChatServer {
         String msg;
 
         while ((msg = clientSocket.getMessage()) != null) {
-            if ("sair".equalsIgnoreCase(msg)) {
+            if ("sair#$%".equalsIgnoreCase(msg)) {
                 clientSocket.sendMsg("Desconectado!");
-                try {
-                    clientSocket.closeInOut();
-                    System.out.println("Socket fechado para o cliente "+clientSocket.getRemoteSocketAddress());
-                } catch (IOException ex) {
-                    Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return;
+                break;
             }
             System.out.printf("Mensagem recebida do cliente %s: %s\n", clientSocket.getRemoteSocketAddress(), msg);
-            clientSocket.sendMsg("Retorno servidor : " + msg);
+            clientSocket.sendMsg("Servidor: " + msg);
         }
+        try {
+            clientSocket.closeInOut();
+            System.out.println("Socket fechado para o cliente " + clientSocket.getRemoteSocketAddress());
+            
+        } catch (IOException ex) {
+            System.out.println("Problemas ao fechar o socket");
+        }
+        //return;
 
     }
 
