@@ -11,10 +11,20 @@ public class ClientSocket {
     private final Socket socket;
     private final BufferedReader in;
     private final PrintWriter out;
+    private String login;
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
 
     public ClientSocket(Socket socket) throws IOException {
 
         this.socket = socket;
+        this.login = "";
         //System.out.println(" Cliente :"+socket.getRemoteSocketAddress()+ " : conectou");
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(socket.getOutputStream(), true);

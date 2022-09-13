@@ -36,12 +36,12 @@ public class ChatServer {
 
             ClientSocket clientSocket = new ClientSocket(serverSocket.accept());
             System.out.println("Cliente Conectado " + clientSocket.getRemoteSocketAddress());
-            clients.add(clientSocket);
+
             InetAddress host = serverSocket.getInetAddress();
             String msg = "Voce esta Conectado no Servidor JavaSD";
-            clientSocket.sendMsg(msg);
 
             new Thread(() -> clientMessageLoop(clientSocket)).start();
+            clientSocket.sendMsg(msg);
 
         }
 
@@ -50,13 +50,18 @@ public class ChatServer {
     public void clientMessageLoop(ClientSocket clientSocket) {
 
         String msg;
+        clientSocket.setLogin(clientSocket.getMessage());
+        /*Movido para esse método,´pois no método ClientConectionLoop
+          ele trava o cliente. Tanta a tribuição do nome quanto a adição
+          na lista de clientes tem que ficar fora do while.
+        */
+        clients.add(clientSocket);
 
         while ((msg = clientSocket.getMessage()) != null) {
             if ("sair#$%".equalsIgnoreCase(msg)) {
                 clientSocket.sendMsg("Desconectado!");
                 break;
             }
-            System.out.printf("Mensagem recebida do cliente %s: %s\n", clientSocket.getRemoteSocketAddress(), msg);
             //clientSocket.sendMsg("[ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " ]" + " Servidor: " + msg);
             Broadcasting(clientSocket, msg);
         }
@@ -76,15 +81,16 @@ public class ChatServer {
         Iterator<ClientSocket> iterator = clients.iterator();
         while (iterator.hasNext()) { //percorres a list clients
             ClientSocket clientSocket = iterator.next();
-            if (!sender.equals(clientSocket)) { //parâmetro sendo verifica o remetente da msg, assim evita enviar o mensagem pra vc mesmo
-                if (!clientSocket.sendMsg("[ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " ]" + " Usuário: " + msg)) {
+            System.out.println(clientSocket.getLogin());
+
+            if (!sender.equals(clientSocket)) {
+                //parâmetro sendo verifica o remetente da msg, assim evita enviar o mensagem pra vc mesmo
+                if (!clientSocket.sendMsg("[ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " ]" + sender.getLogin() + " " + msg)) {
+                    //caso servidor tente mandar a mensagem e o cliente não respoder ele remove o cliente da lista
                     iterator.remove();
                 }
-
             }
-
         }
-
     }
 
     public static void main(String[] args) {
