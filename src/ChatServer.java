@@ -7,6 +7,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -50,7 +55,24 @@ public class ChatServer {
     public void clientMessageLoop(ClientSocket clientSocket) {
 
         String msg;
-        clientSocket.setLogin(clientSocket.getMessage());
+        
+        String temp =(clientSocket.getMessage());
+        JSONObject json;
+        JSONParser parser = new JSONParser();
+        Usuario user = new Usuario();
+        
+        
+        //arrumar ancadeamento para as exceções
+        try {
+            json = (JSONObject) parser.parse(temp);
+            user.setNome((String) json.get("nome"));
+            //System.out.println("Json "+ user.getNome());
+           //clientSocket.setLogin(clientSocket.getMessage());
+           clientSocket.setLogin(user.getNome());
+        } catch (ParseException ex) {
+            Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
         /*Movido para esse método,´pois no método ClientConectionLoop
           ele trava o cliente. Tanta a tribuição do nome quanto a adição
           na lista de clientes tem que ficar fora do while.
@@ -81,11 +103,11 @@ public class ChatServer {
         Iterator<ClientSocket> iterator = clients.iterator();
         while (iterator.hasNext()) { //percorres a list clients
             ClientSocket clientSocket = iterator.next();
-            System.out.println(clientSocket.getLogin());
+            
 
             if (!sender.equals(clientSocket)) {
                 //parâmetro sendo verifica o remetente da msg, assim evita enviar o mensagem pra vc mesmo
-                if (!clientSocket.sendMsg("[ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " ]" + sender.getLogin() + " " + msg)) {
+                if (!clientSocket.sendMsg("[ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " ]" + sender.getLogin() + " : " + msg)) {
                     //caso servidor tente mandar a mensagem e o cliente não respoder ele remove o cliente da lista
                     iterator.remove();
                 }
